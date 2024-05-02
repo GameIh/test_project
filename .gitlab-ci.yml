@@ -1,0 +1,35 @@
+image: python:3.8
+
+stages:
+  - test
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - .venv/
+
+before_script:
+  - python -V
+  - pip install virtualenv
+  - virtualenv .venv
+  - source .venv/bin/activate
+  - pip install -r requirements.txt
+
+test:
+  stage: test
+  script:
+    - cd bin
+    - cd ..
+    - pytest tests/  #
+  artifacts:
+    when: always
+    reports:
+      junit: tests/pytest.xml
+    paths:
+      - .venv/
+  only:
+    - merge_requests
+    - main
